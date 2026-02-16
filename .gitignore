@@ -14,6 +14,10 @@ build/
 src-tauri/target/
 src-tauri/WixTools/
 src-tauri/gen/
+src-tauri/keys/
+src-tauri/node.exe
+src-tauri/icons/android/
+src-tauri/icons/ios/
 
 # Database
 *.db

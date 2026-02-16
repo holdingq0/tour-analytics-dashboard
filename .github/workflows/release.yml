@@ -1,0 +1,72 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Disable telemetry
+        run: npx next telemetry disable
+
+      - name: Download Node.js portable
+        shell: pwsh
+        run: |
+          $nodeVersion = "v22.14.0"
+          $url = "https://nodejs.org/dist/$nodeVersion/node-$nodeVersion-win-x64.zip"
+          Invoke-WebRequest -Uri $url -OutFile node.zip
+          Expand-Archive node.zip -DestinationPath node-extract
+          Copy-Item "node-extract/node-$nodeVersion-win-x64/node.exe" "src-tauri/node.exe"
+          Remove-Item node.zip, node-extract -Recurse -Force
+
+      - name: Update Tauri config for bundled Node
+        shell: pwsh
+        run: |
+          $config = Get-Content src-tauri/tauri.conf.json | ConvertFrom-Json
+          $config.bundle.resources | Add-Member -NotePropertyName "node.exe" -NotePropertyValue "node.exe" -Force
+          $config | ConvertTo-Json -Depth 10 | Set-Content src-tauri/tauri.conf.json
+
+      - name: Build Tauri
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NEXT_TELEMETRY_DISABLED: '1'
+        with:
+          tagName: v__VERSION__
+          releaseName: 'Tour Analytics Dashboard v__VERSION__'
+          releaseBody: |
+            ## Установка
+
+            Скачайте `.exe` файл ниже и запустите установку.
+
+            ### Что нового
+            Смотрите [коммиты](https://github.com/holdingq0/tour-analytics-dashboard/commits/main) для деталей.
+          releaseDraft: false
+          prerelease: false

@@ -1,7 +1,22 @@
 import path from 'path';
+import os from 'os';
+import fs from 'fs';
 import { getMoscowTimestamp } from './timezone';
 
-const dbPath = path.join(process.cwd(), 'data.db');
+function getDbPath(): string {
+  if (process.env.NODE_ENV === 'production') {
+    const appDataDir = process.env.APPDATA ||
+      path.join(os.homedir(), process.platform === 'win32' ? 'AppData/Roaming' : '.config');
+    const appDir = path.join(appDataDir, 'tour-analytics-dashboard');
+    if (!fs.existsSync(appDir)) {
+      fs.mkdirSync(appDir, { recursive: true });
+    }
+    return path.join(appDir, 'data.db');
+  }
+  return path.join(process.cwd(), 'data.db');
+}
+
+const dbPath = getDbPath();
 
 let db: any = null;
 let Database: any = null;

@@ -6,7 +6,8 @@
 
 ## Скачать
 
-Перейдите на страницу [Releases](https://github.com/holdingq0/tour-analytics-dashboard/releases) и скачайте последнюю версию установщика (`.exe`).
+Установщик доступен в разделе [Releases](https://github.com/holdingq0/tour-analytics-dashboard/releases).  
+Скачайте `Tour.Analytics.Dashboard_x.x.x_x64-setup.exe` и запустите установку.
 
 ## Возможности
 

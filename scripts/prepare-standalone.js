@@ -42,3 +42,26 @@ if (fs.existsSync(publicSrc)) {
 }
 
 console.log('Standalone build ready.');
+
+// Create zip archive for Tauri bundling
+const archiver = require('archiver');
+const zipPath = path.join(__dirname, '..', 'src-tauri', 'server-bundle.zip');
+
+console.log('Creating server bundle archive...');
+
+const output = fs.createWriteStream(zipPath);
+const archive = archiver('zip', { zlib: { level: 9 } });
+
+archive.on('error', (err) => {
+  console.error('Archive error:', err);
+  process.exit(1);
+});
+
+output.on('close', () => {
+  const sizeMB = (archive.pointer() / 1024 / 1024).toFixed(1);
+  console.log(`Server bundle created: ${sizeMB} MB`);
+});
+
+archive.pipe(output);
+archive.directory(standaloneDir, false);
+archive.finalize();

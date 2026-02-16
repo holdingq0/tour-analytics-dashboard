@@ -31,7 +31,8 @@
     "active": true,
     "targets": ["nsis"],
     "resources": {
-      "../.next/standalone/**/*": "server/"
+      "server-bundle.zip": "server-bundle.zip",
+      "node.exe": "node.exe"
     },
     "icon": [
       "icons/32x32.png",

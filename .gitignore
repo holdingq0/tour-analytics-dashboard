@@ -16,6 +16,7 @@ src-tauri/WixTools/
 src-tauri/gen/
 src-tauri/keys/
 src-tauri/node.exe
+src-tauri/server-bundle.zip
 src-tauri/icons/android/
 src-tauri/icons/ios/
 
